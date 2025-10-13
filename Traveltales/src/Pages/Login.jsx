@@ -19,7 +19,7 @@ export default function Login() {
     const payload = { email, password, mode };
     if (mode === "signup") payload.confirmPassword = confirm;
 
-    const res = await axios.post("http://localhost:5000/api/login", payload);
+    const res = await axios.post("https://traveltales-l1a7.onrender.com/api/login", payload);
 
     if (res.data.success) {
       localStorage.setItem("token", res.data.token);

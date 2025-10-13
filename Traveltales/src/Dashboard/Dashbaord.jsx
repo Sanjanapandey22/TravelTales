@@ -9,7 +9,7 @@ export default function Dashboard() {
   const [activePage, setActivePage] = useState("home"); 
   const [readBlog, setReadBlog] = useState(null); 
   const [editBlog, setEditBlog] = useState(null); 
-  const [sortBy, setSortBy] = useState(""); // default
+  const [sortBy, setSortBy] = useState(""); 
 
   const handleEdit = (blog) => {
     setEditBlog(blog);
