@@ -141,7 +141,7 @@ const sortedBlogs = [...blogs].sort((a, b) => {
         <form onSubmit={handleSubmit} className="space-y-4">
           <input type="text" placeholder="Title" value={title} onChange={e => setTitle(e.target.value)} className="w-full p-2 bg-white rounded"/>
           <Editor
-            apiKey="YOUR_TINY_API_KEY"
+            apiKey={process.env.REACT_MY_INPUT_KEY}
             value={content}
             onEditorChange={setContent}
             init={{ height: 400, menubar: true, plugins: ['advlist autolink lists link image charmap print preview anchor','searchreplace visualblocks code fullscreen','insertdatetime media table paste code help wordcount'], toolbar:'undo redo | formatselect | bold italic backcolor | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | removeformat | help' }}
