@@ -6,7 +6,7 @@ import Post from "./models/Post.js";
 //import authRoutes from './routes/authRoutes.js';
 import jwt from "jsonwebtoken";
 import bcrypt from "bcryptjs";
-import User from "./models/user.js";
+import User from "./routes/controllers/user.js"
 
 
 dotenv.config({path: "./.env"})
