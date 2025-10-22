@@ -9,12 +9,16 @@ export default function BlogInput({ editBlog, onBack }) {
   const [content, setContent] = useState("");
   const [category, setCategory] = useState("");
   const [blogs, setBlogs] = useState(() => {
-    try { return JSON.parse(localStorage.getItem("blogs") || "[]"); } catch { return []; }
+    try {
+      return JSON.parse(localStorage.getItem("blogs") || "[]");
+    } catch {
+      return [];
+    }
   });
-  const [sortBy, setSortBy] = useState("newest"); 
-
+  const [sortBy, setSortBy] = useState("newest");
   const [editingId, setEditingId] = useState(null);
-  const API = import.meta.env.VITE_API_URL;
+
+  const API = import.meta.env.VITE_API_URL; // Vite env variable
 
   const normalize = (post) => {
     const catKey = (post.category || "").toLowerCase();
@@ -23,26 +27,28 @@ export default function BlogInput({ editBlog, onBack }) {
       title: post.title || "",
       content: post.content || "",
       category: catKey,
-      image: post.image || blogCategories[catKey]?.image || "/default.jpg",
+      image: blogCategories[catKey]?.image || "/default.jpg",
       author: post.author || "User",
-      createdAt: post.createdAt ? new Date(post.createdAt).toISOString() : new Date().toISOString(),
+      createdAt: post.createdAt
+        ? new Date(post.createdAt).toISOString()
+        : new Date().toISOString(),
     };
   };
 
-const sortedBlogs = [...blogs].sort((a, b) => {
-  switch (sortBy) {
-    case "newest":
-      return new Date(b.createdAt) - new Date(a.createdAt);
-    case "oldest":
-      return new Date(a.createdAt) - new Date(b.createdAt);
-    case "title":
-      return a.title.localeCompare(b.title);
-    case "category":
-      return a.category.localeCompare(b.category);
-    default:
-      return 0;
-  }
-});
+  const sortedBlogs = [...blogs].sort((a, b) => {
+    switch (sortBy) {
+      case "newest":
+        return new Date(b.createdAt) - new Date(a.createdAt);
+      case "oldest":
+        return new Date(a.createdAt) - new Date(b.createdAt);
+      case "title":
+        return a.title.localeCompare(b.title);
+      case "category":
+        return a.category.localeCompare(b.category);
+      default:
+        return 0;
+    }
+  });
 
   useEffect(() => {
     const load = async () => {
@@ -105,13 +111,16 @@ const sortedBlogs = [...blogs].sort((a, b) => {
 
       const normalized = normalize(savedPost);
       const updatedBlogs = editingId
-        ? blogs.map(b => (b.id === normalized.id ? normalized : b))
+        ? blogs.map((b) => (b.id === normalized.id ? normalized : b))
         : [normalized, ...blogs];
 
       setBlogs(updatedBlogs);
       localStorage.setItem("blogs", JSON.stringify(updatedBlogs));
 
-      setTitle(""); setContent(""); setCategory(""); setEditingId(null);
+      setTitle("");
+      setContent("");
+      setCategory("");
+      setEditingId(null);
       onBack();
     } catch (error) {
       console.error("Error saving blog:", error);
@@ -124,7 +133,7 @@ const sortedBlogs = [...blogs].sort((a, b) => {
     try {
       const res = await fetch(`${API}/posts/${idToDelete}`, { method: "DELETE" });
       if (!res.ok) throw new Error("Delete failed");
-      const remaining = blogs.filter(b => b.id !== idToDelete);
+      const remaining = blogs.filter((b) => b.id !== idToDelete);
       setBlogs(remaining);
       localStorage.setItem("blogs", JSON.stringify(remaining));
     } catch (err) {
@@ -137,29 +146,66 @@ const sortedBlogs = [...blogs].sort((a, b) => {
     <div className="flex flex-col h-full">
       <Nav />
       <div className="p-6 max-w-3xl mx-auto">
-        <h1 className="text-3xl font-bold mb-4 text-center">{editingId ? "Edit Blog" : "Create Blog"}</h1>
+        <h1 className="text-3xl font-bold mb-4 text-center">
+          {editingId ? "Edit Blog" : "Create Blog"}
+        </h1>
         <form onSubmit={handleSubmit} className="space-y-4">
-          <input type="text" placeholder="Title" value={title} onChange={e => setTitle(e.target.value)} className="w-full p-2 bg-white rounded"/>
+          <input
+            type="text"
+            placeholder="Title"
+            value={title}
+            onChange={(e) => setTitle(e.target.value)}
+            className="w-full p-2 bg-white rounded"
+          />
           <Editor
-            apiKey={process.env.REACT_MY_INPUT_KEY}
+            apiKey={import.meta.env.VITE_REACT_MY_INPUT_KEY} // Vite env
             value={content}
             onEditorChange={setContent}
-            init={{ height: 400, menubar: true, plugins: ['advlist autolink lists link image charmap print preview anchor','searchreplace visualblocks code fullscreen','insertdatetime media table paste code help wordcount'], toolbar:'undo redo | formatselect | bold italic backcolor | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | removeformat | help' }}
+            init={{
+              height: 400,
+              menubar: true,
+              plugins: [
+                "advlist autolink lists link image charmap print preview anchor",
+                "searchreplace visualblocks code fullscreen",
+                "insertdatetime media table paste code help wordcount",
+              ],
+              toolbar:
+                "undo redo | formatselect | bold italic backcolor | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | removeformat | help",
+            }}
           />
-          <select value={category} onChange={e => setCategory(e.target.value)} className="w-full bg-white p-2 rounded">
+          <select
+            value={category}
+            onChange={(e) => setCategory(e.target.value)}
+            className="w-full bg-white p-2 rounded"
+          >
             <option value="">Select Category</option>
-            {Object.keys(blogCategories).map(cat => (
-              <option key={cat} value={cat}>{cat.charAt(0).toUpperCase() + cat.slice(1)}</option>
+            {Object.keys(blogCategories).map((cat) => (
+              <option key={cat} value={cat}>
+                {cat.charAt(0).toUpperCase() + cat.slice(1)}
+              </option>
             ))}
           </select>
-          <button type="submit" className="w-full py-2 bg-purple-500 text-white rounded hover:bg-purple-600">{editingId ? "Update Blog" : "Add Blog"}</button>
+          <button
+            type="submit"
+            className="w-full py-2 bg-purple-500 text-white rounded hover:bg-purple-600"
+          >
+            {editingId ? "Update Blog" : "Add Blog"}
+          </button>
         </form>
 
         <div className="mt-8 space-y-4">
-          {blogs.map(blog => (
-            <BlogCard key={blog.id} blog={blog} 
+          {sortedBlogs.map((blog) => (
+            <BlogCard
+              key={blog.id}
+              blog={blog}
               onRead={() => {}}
-              onEdit={(b) => { setEditingId(b.id); setTitle(b.title); setContent(b.content); setCategory(b.category); window.scrollTo(0,0); }}
+              onEdit={(b) => {
+                setEditingId(b.id);
+                setTitle(b.title);
+                setContent(b.content);
+                setCategory(b.category);
+                window.scrollTo(0, 0);
+              }}
               onDelete={handleDelete}
             />
           ))}
